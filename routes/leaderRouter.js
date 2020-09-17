@@ -3,46 +3,78 @@ const bodyParser = require('body-parser');
 
 const leadersRouter = express();
 
+
+const Leaders = require('../models/leaders');
 leadersRouter.use(bodyParser.json());
 
+
+//working with collections of leaders
 leadersRouter.route('/')
-.all((req, res, next) =>{
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'text/plain');
-    next();
-})
 .get((req, res, next) => {
-    res.end('You can see all available leaders');
+    
+    Leaders.find({})
+    .then(leaders => {
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'application/json');
+        res.json(leaders);
+    }, err => next(err))
+    .catch(err => next(err));
 })
 .post((req, res, next) => {
-    res.end('You can not add new leader!')
+    Leaders.create(req.body)
+    .then(leaders => {
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'application/json');
+        res.json(leaders);
+    }, err => next(err))
+    .catch(err => next(err));
 })
 .put((req, res, next) => {
     res.statusCode = 403;
     res.end('Updating leaders option does not available!');
 })
 .delete((req, res, next) => {
-    res.end('All leaders was deleted!')
+    Leaders.remove({})
+    .then(leaders => {
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'application/json');
+        res.json(leaders);
+    }, err => next(err))
+    .catch(err => next(err));
 })
 
+//working with particular leader
 leadersRouter.route('/:leaderId')
-.all((req, res, next) =>{
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'text/plain');
-    next();
-})
 .get((req, res, next) => {
-    res.end('You can see current leader: ' + req.params.leaderId);
+    Leaders.findById(req.params.leaderId)
+    .then(leader => {
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'application/json');
+        res.json(leader);
+    }, err => next(err))
+    .catch(err => next(err));
 })
 .post((req, res, next) => {
     res.statusCode = 403;
     res.end(`You add new a new leader with name ${req.body.name} and id ${req.params.leaderId}`)
 })
 .put((req, res, next) => {
-    res.end(`Updating operation on leader ${req.params.leaderId} with name ${req.body.name} and ${req.body.description} does not available!`);
+    Leaders.findByIdAndUpdate(req.params.leaderId, {$set: req.body}, {new: true})
+    .then(leader => {
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'application/json');
+        res.json(leader);
+    }, err => next(err))
+    .catch(err => next(err));
 })
 .delete((req, res, next) => {
-    res.end('Leader ' + req.params.leaderId + ' was deleted!')
+    Leaders.findByIdAndRemove(req.params.leaderId)
+    .then(leader => {
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'application/json');
+        res.json(leader);
+    }, err => next(err))
+    .catch(err => next(err));
 })
 
 module.exports = leadersRouter;

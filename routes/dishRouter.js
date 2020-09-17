@@ -23,8 +23,7 @@ dishRouter.route('/')
 .post((req, res, next) => {
 
     Dishes.create(req.body)
-    .then(dish => {
-        console.log('Dish Created ', dish);
+    .then(dishes => {
         res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');
         res.json(dishes);
@@ -38,7 +37,7 @@ dishRouter.route('/')
 })
 
 .delete((req,res, next) =>{
-    Dishes.remove()
+    Dishes.remove({})
     .then((resp) => {
         res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');
