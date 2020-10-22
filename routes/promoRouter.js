@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const authenticate = require('../authenticate');
 
 const promoRouter = express();
 const Promos = require('../models/promotions');
@@ -18,7 +19,7 @@ promoRouter.route('/')
     .catch(err => next(err));
 
 })
-.post((req, res, next) => {
+.post(authenticate.verifyUser,(req, res, next) => {
     Promos.create(req.body)
     .then(promo => {
         res.statusCode = 200;
@@ -28,11 +29,11 @@ promoRouter.route('/')
     .catch(err => next(err))
     
 })
-.put((req, res, next) => {
+.put(authenticate.verifyUser,(req, res, next) => {
     res.statusCode = 403;
     res.end('Updating operation does not available!');
 })
-.delete((req, res, next) => {
+.delete(authenticate.verifyUser,(req, res, next) => {
     Promos.remove({})
     .then(resp => {
         res.statusCode = 200;
@@ -55,11 +56,11 @@ promoRouter.route('/:promoId')
     .catch(err => next(err));
 
 })
-.post((req, res, next) => {
+.post(authenticate.verifyUser,(req, res, next) => {
     res.statusCode = 403;
     res.end('Post operation does not available!');
 })
-.put((req, res, next) => {
+.put(authenticate.verifyUser,(req, res, next) => {
     Promos.findByIdAndUpdate(req.params.promoId, {$set: req.body}, {new: true})
     .then((promo) => {
         res.statusCode = 200;
@@ -68,7 +69,7 @@ promoRouter.route('/:promoId')
     }, err => next(err))
     .catch(err => next(err));
 })
-.delete((req, res, next) => {
+.delete(authenticate.verifyUser,(req, res, next) => {
     Promos.findOneAndRemove(req.params.promoId)
     .then(resp => {
         res.statusCode = 200;
